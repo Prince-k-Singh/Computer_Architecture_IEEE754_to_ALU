@@ -1,0 +1,40 @@
+OP       Operation
+------------------
+00       ADD
+01       SUB
+10       MUL
+11       DIV
+
+
+-----------------------------------------------------------------------------------------------------
+
+
+Suppose:
+
+fraction = 101100...
+
+The stored fraction is:
+
+101100...
+
+but for a normal IEEE-754 number, the actual significand is:
+
+1.101100...
+
+That means internally we'll eventually convert:
+
+52-bit fraction
+
+into:
+
+53-bit significand
+
+for FP64:
+
+1 + 52 fraction bits
+────────────────────
+        53 bits
+
+
+
+-----------------------------------------------------------------------------------------------------

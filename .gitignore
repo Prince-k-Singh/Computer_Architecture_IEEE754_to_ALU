@@ -1,0 +1,29 @@
+# Simulation outputs
+sim/*
+!sim/.gitkeep
+
+# Icarus Verilog generated files
+*.vvp
+*.vcd
+*.fst
+*.lxt
+*.lxt2
+
+# Verilator
+obj_dir/
+*.d
+*.vdb
+
+# Waveform files
+*.gtkw
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.swp
+*.swo
+*~

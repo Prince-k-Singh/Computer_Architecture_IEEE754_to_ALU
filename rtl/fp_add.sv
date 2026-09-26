@@ -101,6 +101,8 @@ module fp_add #(parameter int WIDTH=64)(
 
     // Main arithmetic
     always_comb begin
+    
+        //Initialised to avoid getting completely arbitrary values
         result = '0;
         sig_large = '0;
         sig_small = '0;

@@ -1,58 +1,36 @@
-module fp_add #(
-    parameter int WIDTH = 64
-)(
+module fp_add #(parameter int WIDTH=64)(
     input  logic [WIDTH-1:0] a,
     input  logic [WIDTH-1:0] b,
-
     output logic [WIDTH-1:0] result
 );
 
-    // ------------------------------------------------------------
-    // IEEE-754 parameters
-    // ------------------------------------------------------------
+
+    // IEEE-754 parameters according to sizes
 
     localparam int EXP_WIDTH =
         (WIDTH == 16) ? 5 :
         (WIDTH == 32) ? 8 :
         (WIDTH == 64) ? 11 : 0;
 
-    localparam int FRAC_WIDTH =
-        WIDTH - EXP_WIDTH - 1;
+    localparam int FRAC_WIDTH = WIDTH-EXP_WIDTH-1;
+    localparam int SIG_WIDTH = FRAC_WIDTH + 1;
 
-    localparam int SIG_WIDTH =
-        FRAC_WIDTH + 1;
+    // QNAN just stores the definition for NAN for compact if-else use 
+    localparam logic [WIDTH-1:0] QNAN = {1'b0,{EXP_WIDTH{1'b1}},1'b1,{(FRAC_WIDTH-1){1'b0}}};
 
 
-    // Quiet NaN
-    localparam logic [WIDTH-1:0] QNAN = {
-        1'b0,
-        {EXP_WIDTH{1'b1}},
-        1'b1,
-        {(FRAC_WIDTH-2){1'b0}},
-        1'b1
-    };
-
-    // ------------------------------------------------------------
-    // Unpacked fields
-    // ------------------------------------------------------------
-
+    //Definitions for further operations
     logic sign_a;
     logic sign_b;
-
     logic [EXP_WIDTH-1:0] exp_a;
     logic [EXP_WIDTH-1:0] exp_b;
-
     logic [FRAC_WIDTH-1:0] frac_a;
     logic [FRAC_WIDTH-1:0] frac_b;
-
     logic [SIG_WIDTH-1:0] sig_a;
     logic [SIG_WIDTH-1:0] sig_b;
 
 
-    // ------------------------------------------------------------
-    // Classification
-    // ------------------------------------------------------------
-
+    //Definitions fror Classification of a and b 
     logic a_zero;
     logic a_subnormal;
     logic a_normal;
@@ -65,14 +43,8 @@ module fp_add #(
     logic b_infinity;
     logic b_nan;
 
-
-    // ------------------------------------------------------------
-    // Alignment
-    // ------------------------------------------------------------
-
     logic [SIG_WIDTH-1:0] sig_large;
     logic [SIG_WIDTH-1:0] sig_small;
-
     logic [EXP_WIDTH-1:0] exp_large;
     logic [EXP_WIDTH-1:0] exp_small;
 
@@ -84,89 +56,45 @@ module fp_add #(
     logic [SIG_WIDTH-1:0] sig_small_shifted;
 
 
-    // ------------------------------------------------------------
-    // Arithmetic result
-    //
-    // Extra bit handles:
-    //
+    // Arithmetic result extra bit to handle:
     // 1.x + 1.x = 10.x
-    // ------------------------------------------------------------
 
     logic [SIG_WIDTH:0] arithmetic_result;
 
-
-    // ------------------------------------------------------------
     // Normalized result
-    // ------------------------------------------------------------
-
     logic result_sign;
-
     logic [EXP_WIDTH-1:0] result_exp;
-
     logic [SIG_WIDTH-1:0] result_sig;
 
 
-    // ------------------------------------------------------------
     // Unpack A
-    // ------------------------------------------------------------
-
     always_comb begin
-
         sign_a = a[WIDTH-1];
-
         exp_a = a[WIDTH-2 -: EXP_WIDTH];
-
         frac_a = a[FRAC_WIDTH-1:0];
-
         if (exp_a == 0)
             sig_a = {1'b0, frac_a};
         else
             sig_a = {1'b1, frac_a};
-
     end
 
-
-    // ------------------------------------------------------------
     // Unpack B
-    // ------------------------------------------------------------
-
     always_comb begin
-
         sign_b = b[WIDTH-1];
-
         exp_b = b[WIDTH-2 -: EXP_WIDTH];
-
         frac_b = b[FRAC_WIDTH-1:0];
-
         if (exp_b == 0)
             sig_b = {1'b0, frac_b};
         else
             sig_b = {1'b1, frac_b};
-
     end
 
-
-    // ------------------------------------------------------------
     // Classification
-    // ------------------------------------------------------------
-
     always_comb begin
-
-        a_zero =
-            (exp_a == 0) &&
-            (frac_a == 0);
-
-        a_subnormal =
-            (exp_a == 0) &&
-            (frac_a != 0);
-
-        a_infinity =
-            (&exp_a) &&
-            (frac_a == 0);
-
-        a_nan =
-            (&exp_a) &&
-            (frac_a != 0);
+        a_zero = (exp_a == 0) && (frac_a == 0);
+        a_subnormal = (exp_a == 0) && (frac_a != 0);
+        a_infinity = (&exp_a) && (frac_a == 0);
+        a_nan = (&exp_a) && (frac_a != 0);
 
         a_normal =
             !a_zero &&

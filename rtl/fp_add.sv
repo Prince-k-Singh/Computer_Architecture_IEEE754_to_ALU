@@ -23,6 +23,15 @@ module fp_add #(
         FRAC_WIDTH + 1;
 
 
+    // Quiet NaN
+    localparam logic [WIDTH-1:0] QNAN = {
+        1'b0,
+        {EXP_WIDTH{1'b1}},
+        1'b1,
+        {(FRAC_WIDTH-2){1'b0}},
+        1'b1
+    };
+
     // ------------------------------------------------------------
     // Unpacked fields
     // ------------------------------------------------------------
@@ -230,11 +239,7 @@ module fp_add #(
         // NaN
         if (a_nan || b_nan) begin
 
-            result = {
-                1'b0,
-                {EXP_WIDTH{1'b1}},
-                {{(FRAC_WIDTH-1){1'b0}}, 1'b1}
-            };
+            result =QNAN;
 
         end
 
@@ -255,11 +260,7 @@ module fp_add #(
 
                 // +Inf + -Inf = NaN
 
-                result = {
-                    1'b0,
-                    {EXP_WIDTH{1'b1}},
-                    {{(FRAC_WIDTH-1){1'b0}}, 1'b1}
-                };
+                result = QNAN;
 
             end
 

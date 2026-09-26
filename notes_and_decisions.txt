@@ -7,6 +7,18 @@ OP       Operation
 
 
 -----------------------------------------------------------------------------------------------------
+VVVIP
+
+FP64 ADD/SUB currently truncate the extra significand precision
+instead of implementing full IEEE-754 round-to-nearest-even.
+Randomized verification shows 98.67% agreement with the
+binary64 reference model; all observed ADD/SUB mismatches are
+1-ULP rounding differences. MUL and DIV show 100% agreement
+for the current 10,000-test random-normal dataset.
+
+-----------------------------------------------------------------------------------------------------
+
+
 
 
 Suppose:

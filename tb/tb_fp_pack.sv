@@ -2,58 +2,37 @@
 
 module tb_fp_pack;
 
-    // ============================================================
     // FP64 signals
-    // ============================================================
 
     logic sign;
-
     logic [10:0] exponent;
-
     logic [51:0] fraction;
-
     logic is_zero;
     logic is_infinity;
     logic is_nan;
-
     logic [63:0] out_data;
 
-    // ============================================================
     // Device Under Test
-    // ============================================================
 
-    fp_pack #(
-        .WIDTH(64)
-    ) dut (
+    fp_pack #(.WIDTH(64)) dut (
         .sign(sign),
         .exponent(exponent),
         .fraction(fraction),
-
         .is_zero(is_zero),
         .is_infinity(is_infinity),
         .is_nan(is_nan),
-
         .out_data(out_data)
     );
 
-    // ============================================================
     // Test
-    // ============================================================
 
     initial begin
 
-        // --------------------------------------------------------
         // Test 1: 1.0
-        //
-        // sign     = 0
-        // exponent = 1023
-        // fraction = 0
-        // --------------------------------------------------------
 
         sign = 1'b0;
         exponent = 11'd1023;
         fraction = 52'd0;
-
         is_zero = 1'b0;
         is_infinity = 1'b0;
         is_nan = 1'b0;
@@ -62,12 +41,10 @@ module tb_fp_pack;
 
         $display("=============================================");
         $display("TEST 1: 1.0");
-        $display("Result = %h", out_data);
+        $display("Result = %h",out_data);
         $display("Expected = 3FF0000000000000");
 
-        // --------------------------------------------------------
         // Test 2: -1.0
-        // --------------------------------------------------------
 
         sign = 1'b1;
         exponent = 11'd1023;
@@ -77,17 +54,14 @@ module tb_fp_pack;
 
         $display("---------------------------------------------");
         $display("TEST 2: -1.0");
-        $display("Result = %h", out_data);
+        $display("Result = %h",out_data);
         $display("Expected = BFF0000000000000");
 
-        // --------------------------------------------------------
         // Test 3: +0
-        // --------------------------------------------------------
 
         sign = 1'b0;
         exponent = 11'd0;
         fraction = 52'd0;
-
         is_zero = 1'b1;
         is_infinity = 1'b0;
         is_nan = 1'b0;
@@ -96,12 +70,10 @@ module tb_fp_pack;
 
         $display("---------------------------------------------");
         $display("TEST 3: +0");
-        $display("Result = %h", out_data);
+        $display("Result = %h",out_data);
         $display("Expected = 0000000000000000");
 
-        // --------------------------------------------------------
         // Test 4: -0
-        // --------------------------------------------------------
 
         sign = 1'b1;
 
@@ -109,15 +81,12 @@ module tb_fp_pack;
 
         $display("---------------------------------------------");
         $display("TEST 4: -0");
-        $display("Result = %h", out_data);
+        $display("Result = %h",out_data);
         $display("Expected = 8000000000000000");
 
-        // --------------------------------------------------------
         // Test 5: +Infinity
-        // --------------------------------------------------------
 
         sign = 1'b0;
-
         is_zero = 1'b0;
         is_infinity = 1'b1;
         is_nan = 1'b0;
@@ -126,12 +95,10 @@ module tb_fp_pack;
 
         $display("---------------------------------------------");
         $display("TEST 5: +Infinity");
-        $display("Result = %h", out_data);
+        $display("Result = %h",out_data);
         $display("Expected = 7FF0000000000000");
 
-        // --------------------------------------------------------
         // Test 6: -Infinity
-        // --------------------------------------------------------
 
         sign = 1'b1;
 
@@ -139,15 +106,12 @@ module tb_fp_pack;
 
         $display("---------------------------------------------");
         $display("TEST 6: -Infinity");
-        $display("Result = %h", out_data);
+        $display("Result = %h",out_data);
         $display("Expected = FFF0000000000000");
 
-        // --------------------------------------------------------
         // Test 7: NaN
-        // --------------------------------------------------------
 
         sign = 1'b0;
-
         is_zero = 1'b0;
         is_infinity = 1'b0;
         is_nan = 1'b1;
@@ -156,17 +120,14 @@ module tb_fp_pack;
 
         $display("---------------------------------------------");
         $display("TEST 7: NaN");
-        $display("Result = %h", out_data);
+        $display("Result = %h",out_data);
         $display("Expected = 7FF0000000000001");
-
-        // --------------------------------------------------------
 
         $display("=============================================");
         $display("PACK TESTS COMPLETED");
         $display("=============================================");
 
         $finish;
-
     end
 
 endmodule

@@ -5,37 +5,27 @@ module tb_fp_alu_corner;
     logic [63:0] a;
     logic [63:0] b;
     logic [1:0] op;
-
     logic [63:0] result;
 
     integer total;
     integer passed;
     integer failed;
 
-
     localparam logic [1:0] ADD = 2'b00;
     localparam logic [1:0] SUB = 2'b01;
     localparam logic [1:0] MUL = 2'b10;
     localparam logic [1:0] DIV = 2'b11;
 
-
-    // ============================================================
     // DUT
-    // ============================================================
 
-    fp_alu #(
-        .WIDTH(64)
-    ) dut (
+    fp_alu #(.WIDTH(64)) dut (
         .a(a),
         .b(b),
         .op(op),
         .result(result)
     );
 
-
-    // ============================================================
-    // TEST TASK
-    // ============================================================
+    // Test task
 
     task automatic test(
         input [63:0] x,
@@ -44,90 +34,47 @@ module tb_fp_alu_corner;
         input [63:0] expected,
         input [200*8:1] name
     );
-
         begin
-
             a = x;
             b = y;
             op = operation;
 
             #1;
 
-            total = total + 1;
-
+            total = total+1;
 
             if (result === expected) begin
-
-                passed = passed + 1;
-
-                $display(
-                    "PASS: %s",
-                    name
-                );
-
+                passed = passed+1;
+                $display("PASS: %s",name);
             end
-
             else begin
-
-                failed = failed + 1;
-
-                $display("");
-                $display("FAIL: %s", name);
-
-                $display(
-                    "A        = %h",
-                    a
-                );
-
-                $display(
-                    "B        = %h",
-                    b
-                );
-
-                $display(
-                    "OP       = %b",
-                    op
-                );
-
-                $display(
-                    "RESULT   = %h",
-                    result
-                );
-
-                $display(
-                    "EXPECTED = %h",
-                    expected
-                );
+                failed = failed+1;
 
                 $display("");
-
+                $display("FAIL: %s",name);
+                $display("A        = %h",a);
+                $display("B        = %h",b);
+                $display("OP       = %b",op);
+                $display("RESULT   = %h",result);
+                $display("EXPECTED = %h",expected);
+                $display("");
             end
-
         end
-
     endtask
 
-
-    // ============================================================
-    // TESTS
-    // ============================================================
+    // Tests
 
     initial begin
-
-        total  = 0;
+        total = 0;
         passed = 0;
         failed = 0;
-
 
         $display("");
         $display("=============================================");
         $display("IEEE-754 FP64 CORNER CASE TEST");
         $display("=============================================");
 
-
-        // ========================================================
-        // ADDITION
-        // ========================================================
+        // Addition
 
         test(
             64'h3FF0000000000000,
@@ -137,7 +84,6 @@ module tb_fp_alu_corner;
             "1 + 1 = 2"
         );
 
-
         test(
             64'h3FF0000000000000,
             64'hBFF0000000000000,
@@ -145,7 +91,6 @@ module tb_fp_alu_corner;
             64'h0000000000000000,
             "1 + (-1) = +0"
         );
-
 
         test(
             64'hBFF0000000000000,
@@ -155,7 +100,6 @@ module tb_fp_alu_corner;
             "-1 + (-1) = -2"
         );
 
-
         test(
             64'h0000000000000000,
             64'h0000000000000000,
@@ -163,7 +107,6 @@ module tb_fp_alu_corner;
             64'h0000000000000000,
             "+0 + +0 = +0"
         );
-
 
         test(
             64'h0000000000000000,
@@ -173,7 +116,6 @@ module tb_fp_alu_corner;
             "+0 + -0"
         );
 
-
         test(
             64'h7FF0000000000000,
             64'h7FF0000000000000,
@@ -181,7 +123,6 @@ module tb_fp_alu_corner;
             64'h7FF0000000000000,
             "Inf + Inf = Inf"
         );
-
 
         test(
             64'h7FF0000000000000,
@@ -191,7 +132,6 @@ module tb_fp_alu_corner;
             "Inf + (-Inf) = NaN"
         );
 
-
         test(
             64'h7FF8000000000001,
             64'h3FF0000000000000,
@@ -200,10 +140,7 @@ module tb_fp_alu_corner;
             "NaN + 1 = NaN"
         );
 
-
-        // ========================================================
-        // SUBTRACTION
-        // ========================================================
+        // Subtraction
 
         test(
             64'h3FF0000000000000,
@@ -213,7 +150,6 @@ module tb_fp_alu_corner;
             "1 - 1 = 0"
         );
 
-
         test(
             64'h3FF0000000000000,
             64'hBFF0000000000000,
@@ -221,7 +157,6 @@ module tb_fp_alu_corner;
             64'h4000000000000000,
             "1 - (-1) = 2"
         );
-
 
         test(
             64'hBFF0000000000000,
@@ -231,7 +166,6 @@ module tb_fp_alu_corner;
             "-1 - 1 = -2"
         );
 
-
         test(
             64'h7FF0000000000000,
             64'h7FF0000000000000,
@@ -240,10 +174,7 @@ module tb_fp_alu_corner;
             "Inf - Inf = NaN"
         );
 
-
-        // ========================================================
-        // MULTIPLICATION
-        // ========================================================
+        // Multiplication
 
         test(
             64'h0000000000000000,
@@ -253,7 +184,6 @@ module tb_fp_alu_corner;
             "0 × 2 = 0"
         );
 
-
         test(
             64'h8000000000000000,
             64'h4000000000000000,
@@ -261,7 +191,6 @@ module tb_fp_alu_corner;
             64'h8000000000000000,
             "-0 × 2 = -0"
         );
-
 
         test(
             64'h7FF0000000000000,
@@ -271,7 +200,6 @@ module tb_fp_alu_corner;
             "Inf × 0 = NaN"
         );
 
-
         test(
             64'h7FF0000000000000,
             64'h7FF0000000000000,
@@ -279,7 +207,6 @@ module tb_fp_alu_corner;
             64'h7FF0000000000000,
             "Inf × Inf = Inf"
         );
-
 
         test(
             64'hC000000000000000,
@@ -289,10 +216,7 @@ module tb_fp_alu_corner;
             "-2 × 3 = -6"
         );
 
-
-        // ========================================================
-        // DIVISION
-        // ========================================================
+        // Division
 
         test(
             64'h0000000000000000,
@@ -302,7 +226,6 @@ module tb_fp_alu_corner;
             "0 / 2 = 0"
         );
 
-
         test(
             64'h8000000000000000,
             64'h4000000000000000,
@@ -310,7 +233,6 @@ module tb_fp_alu_corner;
             64'h8000000000000000,
             "-0 / 2 = -0"
         );
-
 
         test(
             64'h0000000000000000,
@@ -320,7 +242,6 @@ module tb_fp_alu_corner;
             "0 / 0 = NaN"
         );
 
-
         test(
             64'h3FF0000000000000,
             64'h0000000000000000,
@@ -328,7 +249,6 @@ module tb_fp_alu_corner;
             64'h7FF0000000000000,
             "1 / 0 = Inf"
         );
-
 
         test(
             64'hBFF0000000000000,
@@ -338,7 +258,6 @@ module tb_fp_alu_corner;
             "-1 / 0 = -Inf"
         );
 
-
         test(
             64'h7FF0000000000000,
             64'h7FF0000000000000,
@@ -346,7 +265,6 @@ module tb_fp_alu_corner;
             64'h7FF8000000000001,
             "Inf / Inf = NaN"
         );
-
 
         test(
             64'h7FF0000000000000,
@@ -356,7 +274,6 @@ module tb_fp_alu_corner;
             "Inf / 2 = Inf"
         );
 
-
         test(
             64'h4000000000000000,
             64'h7FF0000000000000,
@@ -365,16 +282,9 @@ module tb_fp_alu_corner;
             "2 / Inf = 0"
         );
 
-
-        // ========================================================
-        // SUBNORMAL / BOUNDARY CASES
-        // ========================================================
+        // Subnormal / boundary cases
 
         // Smallest positive subnormal
-        //
-        // 0x0000000000000001
-        //
-        // × 1 = itself
 
         test(
             64'h0000000000000001,
@@ -384,10 +294,7 @@ module tb_fp_alu_corner;
             "MIN_SUBNORMAL × 1"
         );
 
-
         // Smallest normal × 0.5
-        //
-        // 2^-1022 × 0.5 = 2^-1023
 
         test(
             64'h0010000000000000,
@@ -397,50 +304,25 @@ module tb_fp_alu_corner;
             "MIN_NORMAL × 0.5"
         );
 
-
-        // ========================================================
-        // SUMMARY
-        // ========================================================
+        // Summary
 
         $display("");
         $display("=============================================");
         $display("CORNER TEST SUMMARY");
         $display("=============================================");
 
-        $display(
-            "TOTAL  = %0d",
-            total
-        );
-
-        $display(
-            "PASSED = %0d",
-            passed
-        );
-
-        $display(
-            "FAILED = %0d",
-            failed
-        );
-
+        $display("TOTAL  = %0d",total);
+        $display("PASSED = %0d",passed);
+        $display("FAILED = %0d",failed);
 
         if (failed == 0)
-
-            $display(
-                "STATUS = ALL TESTS PASSED"
-            );
-
+            $display("STATUS = ALL TESTS PASSED");
         else
-
-            $display(
-                "STATUS = FAILURES DETECTED"
-            );
-
+            $display("STATUS = FAILURES DETECTED");
 
         $display("=============================================");
 
-
         $finish;
-
     end
 
 endmodule

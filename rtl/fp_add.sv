@@ -101,7 +101,7 @@ module fp_add #(parameter int WIDTH=64)(
 
     // Main arithmetic
     always_comb begin
-    
+
         //Initialised to avoid getting completely arbitrary values
         result = '0;
         sig_large = '0;
@@ -204,6 +204,7 @@ module fp_add #(parameter int WIDTH=64)(
                 result_sign = sign_large;
             end
 
+
             if (arithmetic_result == 0) begin
                 result = '0;
             end
@@ -212,12 +213,14 @@ module fp_add #(parameter int WIDTH=64)(
                 result_exp = exp_large;
                 result_sig = arithmetic_result[SIG_WIDTH-1:0];
 
+                \\ Extra Carry generated on addition
                 if (arithmetic_result[SIG_WIDTH]) begin
                     result_sig = arithmetic_result[SIG_WIDTH:1];
                     result_exp = exp_large+1'b1;
                 end
 
                 else begin
+                    \\When we subtract and the result is like 0.00101, so left shift to make the IEEE-754 format as 1.01000
                     for (int i=0;i<SIG_WIDTH;i=i+1) begin
                         if ((result_sig[SIG_WIDTH-1] == 1'b0) && (result_exp > 0)) begin
                             result_sig = result_sig << 1;

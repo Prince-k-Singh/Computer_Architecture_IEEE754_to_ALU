@@ -7,18 +7,12 @@ module fp_alu #(parameter int WIDTH=64)(
 
     // 00 = ADD, 01 = SUB, 10 = MUL, 11 = DIV
 
-    localparam logic [1:0] OP_ADD = 2'b00;
-    localparam logic [1:0] OP_SUB = 2'b01;
-    localparam logic [1:0] OP_MUL = 2'b10;
-    localparam logic [1:0] OP_DIV = 2'b11;
-
-    // Internal results
     logic [WIDTH-1:0] add_result;
     logic [WIDTH-1:0] sub_result;
     logic [WIDTH-1:0] mul_result;
     logic [WIDTH-1:0] div_result;
 
-    // Negating B only requires flipping the sign bit
+    // Negating B only needs the sign bit to be flipped
     logic [WIDTH-1:0] b_neg;
 
     assign b_neg = {~b[WIDTH-1],b[WIDTH-2:0]};
@@ -47,19 +41,14 @@ module fp_alu #(parameter int WIDTH=64)(
         .result(div_result)
     );
 
-    // Select the result based on the operation
+    // Select result based on operation
     always_comb begin
         case (op)
-            OP_ADD:
-                result = add_result;
-            OP_SUB:
-                result = sub_result;
-            OP_MUL:
-                result = mul_result;
-            OP_DIV:
-                result = div_result;
-            default:
-                result = '0;
+            2'b00: result = add_result;
+            2'b01: result = sub_result;
+            2'b10: result = mul_result;
+            2'b11: result = div_result;
+            default: result = '0;
         endcase
     end
 

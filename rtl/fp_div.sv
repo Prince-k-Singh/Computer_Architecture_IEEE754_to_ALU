@@ -74,25 +74,30 @@ module fp_div #(parameter int WIDTH=64)(
         result='0;
         numerator='0;
         quotient_full='0;
+       
         remainder_full='0;
         quotient='0;
         quotient_norm='0;
         sig_ext='0;
         subnormal_ext='0;
         sig_main='0;
+
         sig_rounded='0;
         guard_bit=1'b0;
+        
         round_bit=1'b0;
         sticky_bit=1'b0;
         round_up=1'b0;
         result_exp_field='0;
         result_sign=1'b0;
+        
         shift_amount=0;
         sub_sticky=1'b0;
 
         sign_a=a[WIDTH-1];
         sign_b=b[WIDTH-1];
         exp_a=a[WIDTH-2 -: EXP_WIDTH];
+       
         exp_b=b[WIDTH-2 -: EXP_WIDTH];
         frac_a=a[FRAC_WIDTH-1:0];
         frac_b=b[FRAC_WIDTH-1:0];
@@ -101,7 +106,9 @@ module fp_div #(parameter int WIDTH=64)(
         b_zero=(exp_b == 0) && (frac_b == 0);
         a_subnormal=(exp_a == 0) && (frac_a != 0);
         b_subnormal=(exp_b == 0) && (frac_b != 0);
+        
         a_infinity=(&exp_a) && (frac_a == 0);
+        
         b_infinity=(&exp_b) && (frac_b == 0);
         a_nan=(&exp_a) && (frac_a != 0);
         b_nan=(&exp_b) && (frac_b != 0);
@@ -172,7 +179,7 @@ module fp_div #(parameter int WIDTH=64)(
             result={sign_a ^ sign_b,{EXP_WIDTH{1'b0}},{FRAC_WIDTH{1'b0}}};
         end
 
-        // normally divide ka logic idhr hai
+        // normal divide ka logic idhr hai
         else begin
             result_sign=sign_a ^ sign_b;
             exp_result_unbiased=exp_a_unbiased-exp_b_unbiased;

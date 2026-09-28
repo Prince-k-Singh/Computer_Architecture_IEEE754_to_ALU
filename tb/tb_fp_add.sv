@@ -24,7 +24,7 @@ module tb_fp_add;
 
             #1;
 
-            $display("---------------------------------------------");
+            $display(" ");
             $display("A        = %h", a);
             $display("B        = %h", b);
             $display("Result   = %h", result);

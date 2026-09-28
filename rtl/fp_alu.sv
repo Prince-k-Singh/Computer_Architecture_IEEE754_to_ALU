@@ -19,12 +19,10 @@ module fp_alu #(parameter int WIDTH=64)(
     fp_add #(.WIDTH(WIDTH)) add_unit (.a(a),.b(b),.result(add_result));
 
     fp_add #(.WIDTH(WIDTH)) sub_unit (.a(a),.b(b_neg),.result(sub_result));
-
     fp_mul #(.WIDTH(WIDTH)) mul_unit (.a(a),.b(b),.result(mul_result));
-
     fp_div #(.WIDTH(WIDTH)) div_unit (.a(a),.b(b),.result(div_result));
 
-    // Select result according to konsa operatipn
+    // Select result according to which operatipn we hav chosem
     always_comb begin
         case(op)
             2'b00: result=add_result;

@@ -6,14 +6,12 @@ module tb_fp_add;
     logic [63:0] a;
     logic [63:0] b;
     logic [63:0] result;
-
     // DUT
     fp_add #(.WIDTH(64)) dut (
         .a(a),
         .b(b),
         .result(result)
     );
-
     // Test task
     task automatic test_add(
         input [63:0] in_a,
@@ -140,14 +138,14 @@ module tb_fp_add;
             64'h7FF8000000000000
         );
 
-        // NaN + 1.0 = NaN
+        //NaN+1.0=NaN
         test_add(
             64'h7FF8000000000001,
             64'h3FF0000000000000,
             64'h7FF8000000000000
         );
 
-        // Maximum finite + maximum finite = +Infinity
+        //maximum finite+maximum finite=+Infinity
         test_add(
             64'h7FEFFFFFFFFFFFFF,
             64'h7FEFFFFFFFFFFFFF,

@@ -16,9 +16,11 @@ module fp_mul #(parameter int WIDTH=64)(
     localparam int MIN_NORMAL_EXP=1-BIAS;
     localparam logic [WIDTH-1:0] QNAN={1'b0,{EXP_WIDTH{1'b1}},1'b1,{(FRAC_WIDTH-2){1'b0}},1'b1};
     logic sign_a;
+    
     logic sign_b;
     logic [EXP_WIDTH-1:0] exp_a;
     logic [EXP_WIDTH-1:0] exp_b;
+    
     logic [FRAC_WIDTH-1:0] frac_a;
     logic [FRAC_WIDTH-1:0] frac_b;
 
@@ -145,7 +147,7 @@ module fp_mul #(parameter int WIDTH=64)(
             exp_result_unbiased=exp_a_unbiased+exp_b_unbiased;
             product=sig_a_norm*sig_b_norm;
 
-            // Normalize the product
+
 
             //vo casw jb product is of the type 10.xxxxxx
             if (product[PRODUCT_WIDTH-1]) begin
@@ -193,6 +195,7 @@ module fp_mul #(parameter int WIDTH=64)(
                     subnormal_ext[0]=subnormal_ext[0] || sub_sticky;
                 end
 
+                // roud_up bas ye decide krta hai ki do we need to round? and fir iske baad sub-normal normal ban rha hai ya nhi ye check krke result me daal dena
                 round_up=subnormal_ext[2] && (subnormal_ext[1] || subnormal_ext[0] || subnormal_ext[3]);
                 rounded_ext={1'b0,subnormal_ext[SIG_WIDTH+2:3]}+round_up;
 

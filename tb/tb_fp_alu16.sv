@@ -7,10 +7,13 @@ module tb_fp_alu16;
     logic [1:0] op;
     logic [15:0] result;
 
-    localparam logic [1:0] ADD = 2'b00;
-    localparam logic [1:0] SUB = 2'b01;
-    localparam logic [1:0] MUL = 2'b10;
-    localparam logic [1:0] DIV = 2'b11;
+    localparam logic [1:0] OP_ADD = 2'b00;
+    localparam logic [1:0] OP_SUB = 2'b01;
+    localparam logic [1:0] OP_MUL = 2'b10;
+    localparam logic [1:0] OP_DIV = 2'b11;
+
+    integer pass_count;
+    integer fail_count;
 
     fp_alu #(.WIDTH(16)) dut (
         .a(a),
@@ -19,128 +22,163 @@ module tb_fp_alu16;
         .result(result)
     );
 
-    task automatic test(
-        input [15:0] x,
-        input [15:0] y,
-        input [1:0] operation,
+    task automatic test_alu(
+        input [15:0] in_a,
+        input [15:0] in_b,
+        input [1:0] in_op,
         input [15:0] expected
     );
         begin
-            a = x;
-            b = y;
-            op = operation;
+            a = in_a;
+            b = in_b;
+            op = in_op;
 
             #1;
 
-            if (result === expected)
-                $display(
-                    "PASS: A=%h B=%h OP=%b RESULT=%h",
-                    a,b,op,result
-                );
-            else
-                $display(
-                    "FAIL: A=%h B=%h OP=%b RESULT=%h EXPECTED=%h",
-                    a,b,op,result,expected
-                );
+            $display("---------------------------------------------");
+            $display("A        = %h", a);
+            $display("B        = %h", b);
+            $display("OP       = %b", op);
+            $display("Result   = %h", result);
+            $display("Expected = %h", expected);
+
+            if (result === expected) begin
+                $display("STATUS   = PASS");
+                pass_count = pass_count + 1;
+            end
+            else begin
+                $display("STATUS   = FAIL");
+                fail_count = fail_count + 1;
+            end
         end
     endtask
 
     initial begin
+
+        pass_count = 0;
+        fail_count = 0;
+
         $display("");
         $display("=============================================");
-        $display("FP16 ALU TEST");
+        $display("IEEE-754 FP16 ALU TEST");
         $display("=============================================");
 
-        // ADD
-
-        test(
-            16'h3C00,
-            16'h4000,
-            ADD,
-            16'h4200
+        test_alu(
+            16'h3C00,       // 1.0
+            16'h4000,       // 2.0
+            OP_ADD,
+            16'h4200        // 3.0
         );
 
-        test(
-            16'h4000,
-            16'h4000,
-            ADD,
-            16'h4400
+        test_alu(
+            16'h4000,       // 2.0
+            16'h4000,       // 2.0
+            OP_ADD,
+            16'h4400        // 4.0
         );
 
-        test(
-            16'hC000,
-            16'h4500,
-            ADD,
-            16'h4200
+        test_alu(
+            16'hC000,       // -2.0
+            16'h4500,       // 5.0
+            OP_ADD,
+            16'h4200        // 3.0
+        );
+        test_alu(
+            16'h4500,       // 5.0
+            16'h4000,       // 2.0
+            OP_SUB,
+            16'h4200        // 3.0
         );
 
-        // SUB
-
-        test(
-            16'h4500,
-            16'h4000,
-            SUB,
-            16'h4200
+        test_alu(
+            16'h4000,       // 2.0
+            16'h4500,       // 5.0
+            OP_SUB,
+            16'hC200        // -3.0
         );
 
-        test(
-            16'h4000,
-            16'h4500,
-            SUB,
-            16'hC200
+        test_alu(
+            16'h4000,       // 2.0
+            16'h4000,       // 2.0
+            OP_SUB,
+            16'h0000        // 0.0
+        );
+        test_alu(
+            16'h4000,       // 2.0
+            16'h4200,       // 3.0
+            OP_MUL,
+            16'h4600        // 6.0
         );
 
-        // MUL
-
-        test(
-            16'h4000,
-            16'h4200,
-            MUL,
-            16'h4600
+        test_alu(
+            16'hC000,       // -2.0
+            16'h4200,       // 3.0
+            OP_MUL,
+            16'hC600        // -6.0
         );
 
-        test(
-            16'hC000,
-            16'h4200,
-            MUL,
-            16'hC600
+        test_alu(
+            16'h3E00,       // 1.5
+            16'h4000,       // 2.0
+            OP_MUL,
+            16'h4200        // 3.0
+        );
+        test_alu(
+            16'h4600,       // 6.0
+            16'h4000,       // 2.0
+            OP_DIV,
+            16'h4200        // 3.0
         );
 
-        // DIV
-
-        test(
-            16'h4600,
-            16'h4000,
-            DIV,
-            16'h4200
+        test_alu(
+            16'h4400,       // 4.0
+            16'h4000,       // 2.0
+            OP_DIV,
+            16'h4000        // 2.0
         );
 
-        test(
-            16'h3C00,
-            16'h4000,
-            DIV,
-            16'h3800
+        test_alu(
+            16'h3C00,       // 1.0
+            16'h4000,       // 2.0
+            OP_DIV,
+            16'h3800        // 0.5
         );
 
-        // Special values
+        test_alu(
+            16'hC600,       // -6.0
+            16'h4000,       // 2.0
+            OP_DIV,
+            16'hC200        // -3.0
+        );
 
-        test(
+        test_alu(
             16'h3C00,
             16'h0000,
-            DIV,
+            OP_DIV,
             16'h7C00
         );
 
-        test(
+        // Infinity * 0 = NaN
+        test_alu(
             16'h7C00,
             16'h0000,
-            MUL,
+            OP_MUL,
             16'h7E01
         );
+        $display("");
+        $display("=============================================");
+        $display("FP16 ALU TEST SUMMARY");
+        $display("=============================================");
+        $display("TOTAL TESTS = %0d", pass_count + fail_count);
+        $display("PASSED      = %0d", pass_count);
+        $display("FAILED      = %0d", fail_count);
 
-        $display("=============================================");
-        $display("FP16 TEST COMPLETED");
-        $display("=============================================");
+        if (fail_count == 0)
+            $display("OVERALL     = PASS");
+        else
+            $display("OVERALL     = FAIL");
+
+
 
         $finish;
     end
